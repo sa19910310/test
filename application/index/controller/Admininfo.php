@@ -1,0 +1,70 @@
+<?php
+namespace app\index\controller;
+use app\index\model\Role;
+use app\index\model\User;
+use think\Session;
+use think\Controller;
+class Admininfo extends Common
+{
+	public function index()/*个人信息表*/
+	{
+		$id=parent::getLoginUser()['id'];
+		$list=model("User")->where("id='$id'")->find();
+		$this->assign('name',$list['username']);
+		$this->assign('age',$list['age']);
+		$this->assign('telephone',$list['telephone']);
+		$this->assign('sex',$list['sex']);
+		$this->assign('QQ',$list['QQ']);
+		$this->assign('auto',$list['auto']);
+		$this->assign('create_time',$list['create_time']);
+        return $this->fetch();
+		
+	}
+	
+	public function xiugei()//修改个人信息
+	{
+		$age=input('post.age');
+		$qq=input('post.qq');
+		$sex=input('post.sex');
+		$ip=parent::getLoginUser()['id'];
+		$list=model("User")->where("id='$ip'")->find();
+		$id=$list['id'];
+		$user=new User;
+		$m=$user->save(['age'=>$age,'QQ'=>$qq,'sex'=>$sex],['id'=>$id]);
+			if($m)
+				{
+					 return json(['status'=>1,'message'=>'sucesss']);
+				}
+				else
+				{
+					return json(['status'=>0,'message'=>'error']);
+				}
+		}
+	public function passworld()//修改密码
+	{
+		$ordpassword=input('post.oldpassword');
+		$password=input('post.password');
+		$pass=Session::get('user_name')['pass'];
+		$id=Session::get('user_name')['id'];
+		if($ordpassword==$pass) 
+		{
+			$user=new User;
+			$m=$user->save(['pass'=>$password],['id'=>$id]);
+			if($m)
+				{
+				$user=User::get(['id'=>$id]);
+				Session::set('user_name',$user);
+				return json(['status'=>1,'message'=>'修改成功']);
+				}
+			else
+				{
+				return json(['status'=>0,'message'=>'修改失败']);
+				}
+	}
+			else
+			{
+			return json(['status'=>0,'message'=>'原密码错误']);
+			}
+
+		}
+	}

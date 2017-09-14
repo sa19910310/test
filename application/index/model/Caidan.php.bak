@@ -1,0 +1,19 @@
+<?php
+namespace app\index\model;
+use think\Model;
+use think\Exception;
+use util\Tree;
+
+class Caidan extends Model
+{
+	protected $table='__CAIDAN__';
+	public static function getLocation()
+	{
+		$model      = request()->module();
+        $controller = request()->controller();
+        $action     = request()->action();
+		$location = strtolower($model.'/'.$controller.'/'.$action);
+		dump($location);
+		return $location;
+	}
+}
